@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalles del Cliente</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f4ede3; /* Fondo crema claro */
+            font-family: 'Arial', sans-serif;
+            color: #5a4636; /* Marrón tierra */
+        }
+        .header {
+            background: #d9c2a2; /* Fondo crema oscuro */
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .header h1 {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #5a4636;
+        }
+        .btn-custom {
+            background: #8a6e5a;
+            color: #f4ede3;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .btn-custom:hover {
+            background: #a57f60;
+        }
+        footer {
+            margin-top: 50px;
+            background: #d9c2a2;
+            padding: 15px;
+            text-align: center;
+            color: #5a4636;
+            border-radius: 10px;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <!-- Header -->
+        <div class="header">
+            <h1>{{ customer['name'] }}</h1>
+            <p>Email: {{ customer['email'] }}</p>
+            <p>Teléfono: {{ customer['phone'] }}</p>
+            <p>Fecha de Nacimiento: {{ customer['birth_date'] or 'No registrada' }}</p>
+        </div>
+
+        <!-- Total Gastado -->
+        <div class="mt-4 d-flex justify-content-between align-items-center">
+            <h4>Total Gastado: ${{ total_spent }}</h4>
+            <a href="/customers" class="btn btn-custom">Volver a la Lista de Clientes</a>
+        </div>
+
+        <!-- Historial de Servicios -->
+        <h3 class="mt-4">Historial de Servicios Solicitados</h3>
+        <ul class="list-group mt-3">
+            {% for service in services %}
+                <li class="list-group-item">
+                    {{ service['service_name'] }} - ${{ service['price'] }} - Fecha: {{ service['date'] }}
+                </li>
+            {% else %}
+                <li class="list-group-item">Este cliente no tiene servicios registrados.</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        &copy; 2024 Clever Nails - Todos los derechos reservados.
+    </footer>
+</body>
+</html>
