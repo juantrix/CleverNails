@@ -15,4 +15,4 @@ if __name__ == "__main__":
     initialize_db()
 
     # Ejecutar la aplicación
-    app.run(debug=True)
+    app.run(debug=False)
