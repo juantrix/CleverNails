@@ -1,11 +1,13 @@
 from flask import Blueprint, render_template, request, jsonify, redirect, url_for
 from app.database import query_db
 from datetime import datetime
+from ..utils import login_required
 
 # Define el blueprint para las rutas relacionadas con las ventas
 sales_bp = Blueprint("sales", __name__)
 
 @sales_bp.route("/sales", methods=["GET", "POST"])
+@login_required
 def sales():
     if request.method == "POST":
         client_id = request.form.get("client_id")
@@ -20,6 +22,7 @@ def sales():
     return render_template("sales.html", services=services, customers=customers)
 
 @sales_bp.route("/register-sale", methods=["POST"])
+@login_required
 def register_sale():
     data = request.get_json()
 

@@ -45,6 +45,20 @@
             outline: none;
             box-shadow: 0 0 10px rgba(138, 110, 90, 0.8);
         }
+        .btn-logout {
+            background: #dc3545; /* Rojo */
+            color: #f4ede3; /* Crema claro */
+            border: none;
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .btn-logout:hover {
+            background: #c82333; /* Rojo más oscuro */
+        }
         footer {
             margin-top: 50px;
             background: #d9c2a2; /* Crema oscuro */
@@ -69,7 +83,12 @@
             <a href="/customers" class="btn btn-custom mb-3 w-75">Lista de Clientes</a>
             <a href="/services" class="btn btn-custom mb-3 w-75">Gestión de Servicios</a>
             <a href="/sales" class="btn btn-custom mb-3 w-75">Registrar Venta</a>
-            <a href="/stats" class="btn btn-custom w-75">Ver Estadísticas del Día</a>
+            <a href="/stats" class="btn btn-custom mb-3 w-75">Ver Estadísticas del Día</a>
+        </div>
+
+        <!-- Logout Button -->
+        <div class="d-flex justify-content-center mt-4">
+            <a href="/logout" class="btn btn-logout">Cerrar Sesión</a>
         </div>
     </div>
 

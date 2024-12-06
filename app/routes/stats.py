@@ -1,11 +1,13 @@
 from flask import Blueprint, render_template, request, Response
 from app.database import query_db
 from datetime import datetime
+from ..utils import login_required
 
 # Define el blueprint para las rutas relacionadas con estadísticas
 stats_bp = Blueprint("stats", __name__)
 
 @stats_bp.route("/stats", methods=["GET"])
+@login_required
 def stats():
     date = request.args.get("date", datetime.now().strftime("%Y-%m-%d"))
     sales = query_db("""
@@ -23,6 +25,7 @@ def stats():
 
 
 @stats_bp.route("/download-sales", methods=["GET"])
+@login_required
 def download_sales():
     date = request.args.get("date", datetime.now().strftime("%Y-%m-%d"))
     sales = query_db("""

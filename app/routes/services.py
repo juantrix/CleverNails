@@ -1,10 +1,12 @@
 from flask import Blueprint, render_template, request, redirect, url_for
 from app.database import query_db
+from ..utils import login_required
 
 # Define el blueprint para los servicios
 services_bp = Blueprint("services", __name__)
 
 @services_bp.route("/services", methods=["GET", "POST"])
+@login_required
 def services():
     if request.method == "POST":
         name = request.form.get("name")
@@ -16,6 +18,7 @@ def services():
     return render_template("services.html", services=services)
 
 @services_bp.route("/delete-service", methods=["POST"])
+@login_required
 def delete_service():
     service_id = request.form.get("service_id")
     if service_id:

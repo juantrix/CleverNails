@@ -1,12 +1,14 @@
 # app/routes/customers.py
 from flask import Blueprint, jsonify, render_template, request, redirect, url_for
 from app.database import query_db
+from ..utils import login_required
 
 # Define el blueprint
 customers_bp = Blueprint("customers", __name__)
 
 
 @customers_bp.route("/customers", methods=["GET"])
+@login_required
 def customers():
     query = request.args.get("search", "")
     if query:
@@ -17,6 +19,7 @@ def customers():
 
 
 @customers_bp.route("/customer/<int:customer_id>")
+@login_required
 def customer_details(customer_id):
     # Obtener el cliente
     customer = query_db("SELECT * FROM customers WHERE id = ?", (customer_id,), one=True)
@@ -34,7 +37,6 @@ def customer_details(customer_id):
 
     # Calcular el total gastado, considerando los descuentos
     total_spent = sum(service['price'] - (service['discount'] or 0) for service in services)
-    print(total_spent)
 
     return render_template(
         "customer_details.html", 
@@ -45,6 +47,7 @@ def customer_details(customer_id):
 
 
 @customers_bp.route("/register-customer", methods=["GET", "POST"])
+@login_required
 def register_customer():
     if request.method == "POST":
         name = request.form.get("name")
@@ -72,6 +75,7 @@ def register_customer():
 
 
 @customers_bp.route("/search-customers", methods=["GET"])
+@login_required
 def search_customers():
     query = request.args.get("query", "").strip()
     if query:
@@ -81,6 +85,7 @@ def search_customers():
 
 
 @customers_bp.route("/delete-customer/<int:customer_id>", methods=["POST"])
+@login_required
 def delete_customer(customer_id):
     # Verificar si el cliente existe
     customer = query_db("SELECT * FROM customers WHERE id = ?", (customer_id,), one=True)
@@ -93,6 +98,7 @@ def delete_customer(customer_id):
 
 
 @customers_bp.route("/edit-customer/<int:customer_id>", methods=["GET", "POST"])
+@login_required
 def edit_customer(customer_id):
     # Obtener el cliente actual desde la base de datos
     customer = query_db("SELECT * FROM customers WHERE id = ?", (customer_id,), one=True)
