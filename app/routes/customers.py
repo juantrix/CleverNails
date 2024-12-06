@@ -23,20 +23,25 @@ def customer_details(customer_id):
     if not customer:
         return "Cliente no encontrado", 404
 
-    # Obtener historial de servicios
+    # Obtener historial de servicios, incluyendo el descuento
     services = query_db("""
-        SELECT s.name AS service_name, s.price, sa.date
+        SELECT s.name AS service_name, s.price, sa.discount, sa.date
         FROM sales sa
         JOIN services s ON sa.service_id = s.id
         WHERE sa.customer_id = ?
         ORDER BY sa.date DESC
     """, (customer_id,))
 
-    # Calcular total gastado
-    total_spent = sum(service['price'] for service in services)
+    # Calcular el total gastado, considerando los descuentos
+    total_spent = sum(service['price'] - (service['discount'] or 0) for service in services)
+    print(total_spent)
 
-    return render_template("customer_details.html", customer=customer, services=services, total_spent=total_spent)
-
+    return render_template(
+        "customer_details.html", 
+        customer=customer, 
+        services=services, 
+        total_spent=total_spent
+    )
 
 
 @customers_bp.route("/register-customer", methods=["GET", "POST"])

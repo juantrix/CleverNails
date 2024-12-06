@@ -23,27 +23,22 @@ def sales():
 def register_sale():
     data = request.get_json()
 
-    # Depuración: imprime los datos recibidos
-    print("Datos recibidos:", data)
-
     customer_id = data.get("client_id")
     services = data.get("services", [])
-    quantities = data.get("quantities", [])  # Cantidades asociadas a cada servicio
+    quantities = data.get("quantities", [])
+    discounts = data.get("discounts", [])
 
-    # Validaciones
     if not customer_id:
         return jsonify({"success": False, "message": "El cliente es obligatorio."}), 400
-    if not services or not quantities or len(services) != len(quantities):
-        return jsonify({"success": False, "message": "Debes seleccionar al menos un servicio y especificar una cantidad válida."}), 400
+    if not services:
+        return jsonify({"success": False, "message": "Debes seleccionar al menos un servicio."}), 400
 
     date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
-    # Registrar servicios con cantidades en la base de datos
-    for service_id, quantity in zip(services, quantities):
+    for service_id, quantity, discount in zip(services, quantities, discounts):
         for _ in range(int(quantity)):
             query_db(
-                "INSERT INTO sales (service_id, customer_id, date) VALUES (?, ?, ?)",
-                (service_id, customer_id, date),
+                "INSERT INTO sales (service_id, customer_id, date, discount) VALUES (?, ?, ?, ?)",
+                (service_id, customer_id, date, float(discount))
             )
 
     return jsonify({"success": True, "message": "Venta registrada exitosamente."}), 200

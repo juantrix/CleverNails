@@ -57,6 +57,10 @@
             border-radius: 10px;
             font-size: 0.9rem;
         }
+        .text-violet {
+            color: violet;
+            font-weight: bold; /* Opcional para enfatizar */
+        }
     </style>
 </head>
 <body>
@@ -91,12 +95,17 @@
         <ul class="list-group mt-3">
             {% for sale in sales|sort(attribute='date', reverse=True) %}
                 <li class="list-group-item">
-                    {{ sale['date'] }} - {{ sale['name'] }} - ${{ sale['price'] }} - Cliente: {{ sale['customer_name'] }}
+                    {{ sale['date'] }} - <span class="text-violet">{{ sale['name'] }}</span> - 
+                    Precio Original: ${{ sale['price'] }} - 
+                    Descuento: <span class="text-danger"> ${{ sale['discount'] }}</span> - 
+                    Precio Final: <span class="text-success">  ${{ sale['price'] - sale['discount'] }}</span> - 
+                    Cliente: {{ sale['customer_name'] }}
                 </li>
             {% else %}
                 <li class="list-group-item">No hay servicios registrados para esta fecha.</li>
             {% endfor %}
         </ul>
+        
     </div>
 
     <!-- Footer -->

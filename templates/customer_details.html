@@ -68,12 +68,17 @@
         <ul class="list-group mt-3">
             {% for service in services %}
                 <li class="list-group-item">
-                    {{ service['service_name'] }} - ${{ service['price'] }} - Fecha: {{ service['date'] }}
+                    {{ service['service_name'] }} - 
+                    Precio Original: ${{ service['price'] }} - 
+                    Descuento: ${{ service['discount'] }} - 
+                    Precio Final: ${{ service['price'] - service['discount'] }} - 
+                    Fecha: {{ service['date'] }}
                 </li>
             {% else %}
                 <li class="list-group-item">Este cliente no tiene servicios registrados.</li>
             {% endfor %}
         </ul>
+        
     </div>
 
     <!-- Footer -->

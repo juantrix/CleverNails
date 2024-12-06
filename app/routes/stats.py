@@ -9,14 +9,18 @@ stats_bp = Blueprint("stats", __name__)
 def stats():
     date = request.args.get("date", datetime.now().strftime("%Y-%m-%d"))
     sales = query_db("""
-        SELECT s.name, s.price, c.name as customer_name, sa.date 
-        FROM sales sa 
+        SELECT s.name AS name, s.price, sa.discount, c.name AS customer_name, sa.date
+        FROM sales sa
         JOIN services s ON sa.service_id = s.id
         JOIN customers c ON sa.customer_id = c.id
         WHERE sa.date LIKE ?
     """, (f"{date}%",))
-    total_revenue = sum(sale["price"] for sale in sales) if sales else 0
+
+    # Calcula el ingreso total considerando los descuentos
+    total_revenue = sum((sale["price"] - sale["discount"]) for sale in sales) if sales else 0
+
     return render_template("stats.html", sales=sales, total_revenue=total_revenue, date=date)
+
 
 @stats_bp.route("/download-sales", methods=["GET"])
 def download_sales():

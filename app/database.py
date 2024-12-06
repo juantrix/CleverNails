@@ -1,5 +1,6 @@
 import sqlite3
 
+
 def query_db(query, args=(), one=False):
     conn = sqlite3.connect("manicure_shop.db")
     conn.row_factory = sqlite3.Row
@@ -9,6 +10,7 @@ def query_db(query, args=(), one=False):
     conn.commit()
     conn.close()
     return (rv[0] if rv else None) if one else rv
+
 
 def initialize_db():
     # Crear tablas si no existen
@@ -45,5 +47,10 @@ def initialize_db():
     if "customer_id" not in columns:
         cursor.execute("ALTER TABLE sales ADD COLUMN customer_id INTEGER REFERENCES customers (id)")
         print("Columna customer_id agregada a la tabla sales.")
+
+    if "discount" not in columns:
+        cursor.execute("ALTER TABLE sales ADD COLUMN discount REAL DEFAULT 0")
+        print("Columna discount agregada a la tabla sales.")
+
     conn.commit()
     conn.close()
