@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Stock</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f4ede3; /* Fondo crema claro */
+            font-family: 'Arial', sans-serif;
+            color: #5a4636; /* Marrón tierra */
+        }
+        .header {
+            background: #d9c2a2; /* Fondo crema oscuro */
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .header h1 {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #5a4636;
+        }
+        .btn-custom {
+            background: #8a6e5a;
+            color: #f4ede3;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .btn-custom:hover {
+            background: #a57f60;
+        }
+        .btn-custom:focus {
+            outline: none;
+            box-shadow: 0 0 10px rgba(138, 110, 90, 0.8);
+        }
+        footer {
+            margin-top: 50px;
+            background: #d9c2a2;
+            padding: 15px;
+            text-align: center;
+            color: #5a4636;
+            border-radius: 10px;
+            font-size: 0.9rem;
+        }
+        .table {
+            background-color: #f8f1e7;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <!-- Header -->
+        <div class="header">
+            <h1>Gestión de Stock</h1>
+        </div>
+
+        <!-- Formulario para agregar productos -->
+        <form id="add-product-form" class="mt-4">
+            <div class="row">
+                <div class="col-md-4">
+                    <label for="product-name" class="form-label">Nombre del Producto</label>
+                    <input type="text" class="form-control" id="product-name" required>
+                </div>
+                <div class="col-md-4">
+                    <label for="product-price" class="form-label">Precio</label>
+                    <input type="number" class="form-control" id="product-price" step="0.01" required>
+                </div>
+                <div class="col-md-4">
+                    <label for="product-quantity" class="form-label">Cantidad</label>
+                    <input type="number" class="form-control" id="product-quantity" min="0" required>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-custom mt-3">Agregar Producto</button>
+        </form>
+
+        <!-- Barra de búsqueda -->
+        <div class="mt-4 mb-3">
+            <label for="search-bar" class="form-label">Buscar producto:</label>
+            <input type="text" id="search-bar" class="form-control" placeholder="Escribe el nombre del producto...">
+        </div>
+
+        <!-- Tabla de productos -->
+        <h2 class="mt-5">Productos en Stock</h2>
+        <table class="table mt-3">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Precio</th>
+                    <th>Cantidad</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="product-table-body">
+                <!-- Filas dinámicas -->
+            </tbody>
+        </table>
+
+        <!-- Botón Volver -->
+        <a href="/home" class="btn btn-custom mt-3">Volver</a>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        &copy; 2024 Clever Nails - Todos los derechos reservados.
+    </footer>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const productTableBody = document.getElementById("product-table-body");
+            const addProductForm = document.getElementById("add-product-form");
+            const searchBar = document.getElementById("search-bar");
+
+            // Función para cargar productos
+            async function loadProducts(search = "") {
+                const response = await fetch(`/products?search=${encodeURIComponent(search)}`);
+                const products = await response.json();
+
+                productTableBody.innerHTML = ""; // Limpia la tabla antes de recargar
+                products.forEach(product => {
+                    const row = document.createElement("tr");
+                    row.innerHTML = `
+                        <td>${product.name}</td>
+                        <td>$${product.price.toFixed(2)}</td>
+                        <td>${product.quantity}</td>
+                        <td>
+                            <button class="btn btn-warning btn-sm" onclick="updateQuantity(${product.id}, -1)">-1</button>
+                            <button class="btn btn-success btn-sm" onclick="updateQuantity(${product.id}, 1)">+1</button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteProduct(${product.id})">Eliminar</button>
+                        </td>
+                    `;
+                    productTableBody.appendChild(row);
+                });
+            }
+
+            // Escucha para el input de búsqueda
+            searchBar.addEventListener("input", () => {
+                const query = searchBar.value.trim();
+                loadProducts(query);
+            });
+
+            // Función para agregar producto
+            addProductForm.addEventListener("submit", async (e) => {
+                e.preventDefault();
+
+                const name = document.getElementById("product-name").value;
+                const price = parseFloat(document.getElementById("product-price").value);
+                const quantity = parseInt(document.getElementById("product-quantity").value);
+
+                await fetch("/products", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ name, price, quantity })
+                });
+
+                addProductForm.reset();
+                loadProducts();
+            });
+
+            // Función para actualizar cantidad
+            window.updateQuantity = async (id, change) => {
+                await fetch(`/products`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ id, change })
+                });
+                loadProducts();
+            };
+
+            // Función para eliminar producto
+            window.deleteProduct = async (id) => {
+                await fetch(`/products`, {
+                    method: "DELETE",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ id })
+                });
+                loadProducts();
+            };
+
+            // Cargar productos al iniciar
+            loadProducts();
+        });
+    </script>
+</body>
+</html>

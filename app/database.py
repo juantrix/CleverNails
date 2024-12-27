@@ -6,10 +6,16 @@ def query_db(query, args=(), one=False):
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
     cursor.execute(query, args)
-    rv = cursor.fetchall()
-    conn.commit()
+
+    # Verifica si es un cambio en la base de datos
+    if query.strip().upper().startswith(("INSERT", "UPDATE", "DELETE")):
+        print('se confirmo el cambio')
+        conn.commit()  # Asegura que los cambios se confirmen
+
+    rv = cursor.fetchall() if query.strip().upper().startswith("SELECT") else None
     conn.close()
     return (rv[0] if rv else None) if one else rv
+
 
 
 def initialize_db():
@@ -37,6 +43,15 @@ def initialize_db():
         date TEXT,
         FOREIGN KEY (service_id) REFERENCES services (id)
     )
+    """)
+    query_db("""
+    CREATE TABLE IF NOT EXISTS products (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        price REAL NOT NULL,
+        quantity INTEGER NOT NULL,
+        notification_threshold INTEGER NOT NULL
+    );
     """)
 
     # Verificar si la columna customer_id ya existe
